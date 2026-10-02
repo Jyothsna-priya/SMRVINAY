@@ -4,10 +4,10 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { ArrowLeft, Save, Loader2 } from "lucide-react";
-import { Field, TextInput, Select, Button, Card, Switch, LockedField } from "./ui";
+import { Field, TextInput, Select, Button, Card, Switch, LockedField, Textarea } from "./ui";
 import FlatPicker from "./FlatPicker";
 import { emptyQuote, type Quote, type QuoteInput } from "@/lib/types";
-import { computeQuote, rupees, AGREEMENT_PERCENT, BOOKING_AMOUNT } from "@/lib/calc";
+import { computeQuote, rupees, AGREEMENT_PERCENT, BOOKING_AMOUNT, GST_PERCENT } from "@/lib/calc";
 import { createQuote, updateQuote } from "@/lib/store";
 
 type Props = { initial?: Quote; id?: string };
@@ -206,9 +206,9 @@ export default function QuoteForm({ initial, id }: Props) {
               hint={`${AGREEMENT_PERCENT}% of Flat Cost, minus Booking Amount (registration excluded)`}
             />
             <Field label="Notes (optional)" className="sm:col-span-2">
-              <TextInput
+              <Textarea
                 value={form.notes ?? ""}
-                onChange={str("notes")}
+                onChange={(e) => set("notes", e.target.value)}
                 placeholder="Any extra remarks shown on the estimate"
               />
             </Field>
@@ -225,7 +225,7 @@ export default function QuoteForm({ initial, id }: Props) {
               <p className="mt-1 text-2xl font-bold tabular-nums">
                 {rupees(c.grandTotal)}
               </p>
-              <p className="text-[11px] text-slate-300">All-in (flat + charges)</p>
+              <p className="text-[11px] text-slate-300">All-in (flat + charges + GST)</p>
             </div>
             <div className="space-y-2.5 p-5 text-sm">
               <SumRow k="Flat Cost (Basic)" v={rupees(c.basicCost)} />
@@ -241,6 +241,7 @@ export default function QuoteForm({ initial, id }: Props) {
                 <span className="tabular-nums">{rupees(c.flatCost)}</span>
               </div>
               <SumRow k="Registration Charges" v={rupees(c.registrationTotal)} />
+              <SumRow k={`GST (${GST_PERCENT}%)`} v={rupees(c.gstAmount)} />
               <SumRow
                 k={`Agreement Amount (${AGREEMENT_PERCENT}%)`}
                 v={rupees(c.agreementAmount)}

@@ -1,5 +1,5 @@
 import type { Quote } from "@/lib/types";
-import { computeQuote, rupees, formatDateDots, AGREEMENT_PERCENT, BOOKING_AMOUNT } from "@/lib/calc";
+import { computeQuote, rupees, formatDateDots, AGREEMENT_PERCENT, BOOKING_AMOUNT, GST_BASE_RATE_PER_SFT, GST_PERCENT } from "@/lib/calc";
 
 /** On-screen A4 rendition of the SMR VINAY estimate letter (matches the PDF). */
 export default function QuotePreview({ quote }: { quote: Quote }) {
@@ -129,6 +129,31 @@ export default function QuotePreview({ quote }: { quote: Quote }) {
         </div>
       )}
 
+      {/* GST */}
+      <div className="mt-6">
+        <div className="mb-1 text-[12px] font-bold uppercase tracking-wide text-navy">
+          GST
+        </div>
+        <Row
+          label={
+            <>
+              GST{" "}
+              <span className="text-slate-400">
+                ({GST_PERCENT}% of Rs.{GST_BASE_RATE_PER_SFT}/- per Sft.) ×{" "}
+                {quote.extentSft}
+              </span>
+            </>
+          }
+          value={rupees(c.gstAmount)}
+        />
+        <div className="mt-1 flex items-baseline justify-between gap-4 border-t border-slate-200 py-[3px] pt-2 font-bold text-navy">
+          <span className="text-[13.5px] leading-snug">Total GST</span>
+          <span className="shrink-0 text-[13.5px] tabular-nums">
+            {rupees(c.gstAmount)}
+          </span>
+        </div>
+      </div>
+
       <div className="mt-3 flex items-center justify-between gap-4 rounded-lg bg-navy px-4 py-3">
         <span className="text-[11px] font-bold uppercase tracking-wide text-gold">
           Grand Total
@@ -137,6 +162,9 @@ export default function QuotePreview({ quote }: { quote: Quote }) {
           {rupees(c.grandTotal)}
         </span>
       </div>
+      <p className="mt-1 text-right text-[11px] italic text-slate-500">
+        Grand Total includes GST
+      </p>
 
       {/* Payment terms */}
       <div className="mt-6 space-y-1.5 rounded-xl border border-gold-soft bg-gold-soft/30 p-5 text-[13px] leading-relaxed">

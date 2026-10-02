@@ -36,6 +36,10 @@ export const CORPUS_FUND_RATE_PER_SFT = 60;
 export const MAINT_RATE_PER_SFT = 4;
 export const MAINT_MONTHS = 24;
 
+/** GST is charged on a fixed Rs./Sft base (not on the flat cost) at a flat percentage, on every quote. */
+export const GST_BASE_RATE_PER_SFT = 6600;
+export const GST_PERCENT = 5;
+
 export interface ComputedQuote {
   basicCost: number;
   discountAmount: number;
@@ -47,7 +51,9 @@ export interface ComputedQuote {
   registrationTotal: number;
 
   agreementAmount: number; // 20% of flat cost, minus booking amount
-  grandTotal: number; // flat cost + registration charges
+  gstBase: number; // GST_BASE_RATE_PER_SFT x extent
+  gstAmount: number; // GST_PERCENT of gstBase
+  grandTotal: number; // flat cost + registration charges + GST
 }
 
 export function computeQuote(q: Quote | QuoteInput): ComputedQuote {
@@ -73,6 +79,9 @@ export function computeQuote(q: Quote | QuoteInput): ComputedQuote {
     0,
   );
 
+  const gstBase = GST_BASE_RATE_PER_SFT * extent;
+  const gstAmount = (gstBase * GST_PERCENT) / 100;
+
   const agreementAmount = (AGREEMENT_PERCENT / 100) * flatCost - BOOKING_AMOUNT;
 
   return {
@@ -84,7 +93,9 @@ export function computeQuote(q: Quote | QuoteInput): ComputedQuote {
     registrationCharges,
     registrationTotal,
     agreementAmount,
-    grandTotal: flatCost + registrationTotal,
+    gstBase,
+    gstAmount,
+    grandTotal: flatCost + registrationTotal + gstAmount,
   };
 }
 
