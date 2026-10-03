@@ -40,6 +40,10 @@ export const MAINT_MONTHS = 24;
 export const GST_BASE_RATE_PER_SFT = 6600;
 export const GST_PERCENT = 5;
 
+/** Registration charges: fixed Rs./Sft base (not the flat cost) x percentage, on every quote. */
+export const REG_CHARGES_BASE_RATE_PER_SFT = 6600;
+export const REG_CHARGES_PERCENT = 7.6;
+
 export interface ComputedQuote {
   basicCost: number;
   discountAmount: number;
@@ -53,7 +57,9 @@ export interface ComputedQuote {
   agreementAmount: number; // 20% of flat cost, minus booking amount
   gstBase: number; // GST_BASE_RATE_PER_SFT x extent
   gstAmount: number; // GST_PERCENT of gstBase
-  grandTotal: number; // flat cost + registration charges + GST
+  regChargesBase: number; // REG_CHARGES_BASE_RATE_PER_SFT x extent
+  regChargesAmount: number; // REG_CHARGES_PERCENT of regChargesBase
+  grandTotal: number; // flat cost + payable-at-registration items + GST + registration charges
 }
 
 export function computeQuote(q: Quote | QuoteInput): ComputedQuote {
@@ -82,6 +88,9 @@ export function computeQuote(q: Quote | QuoteInput): ComputedQuote {
   const gstBase = GST_BASE_RATE_PER_SFT * extent;
   const gstAmount = (gstBase * GST_PERCENT) / 100;
 
+  const regChargesBase = REG_CHARGES_BASE_RATE_PER_SFT * extent;
+  const regChargesAmount = (regChargesBase * REG_CHARGES_PERCENT) / 100;
+
   const agreementAmount = (AGREEMENT_PERCENT / 100) * flatCost - BOOKING_AMOUNT;
 
   return {
@@ -95,7 +104,9 @@ export function computeQuote(q: Quote | QuoteInput): ComputedQuote {
     agreementAmount,
     gstBase,
     gstAmount,
-    grandTotal: flatCost + registrationTotal + gstAmount,
+    regChargesBase,
+    regChargesAmount,
+    grandTotal: flatCost + registrationTotal + gstAmount + regChargesAmount,
   };
 }
 

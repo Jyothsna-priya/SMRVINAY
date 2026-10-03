@@ -6,7 +6,7 @@ import {
   StyleSheet,
 } from "@react-pdf/renderer";
 import type { Quote } from "@/lib/types";
-import { computeQuote, rupees, formatDateDots, AGREEMENT_PERCENT, BOOKING_AMOUNT, GST_BASE_RATE_PER_SFT, GST_PERCENT } from "@/lib/calc";
+import { computeQuote, rupees, formatDateDots, AGREEMENT_PERCENT, BOOKING_AMOUNT, GST_BASE_RATE_PER_SFT, GST_PERCENT, REG_CHARGES_BASE_RATE_PER_SFT, REG_CHARGES_PERCENT } from "@/lib/calc";
 
 const NAVY = "#10233f";
 const GOLD = "#c6952f";
@@ -248,17 +248,20 @@ export default function QuoteDocument({ quote }: { quote: Quote }) {
           label={`GST  (${GST_PERCENT}% of Rs.${GST_BASE_RATE_PER_SFT}/- per Sft.) x ${quote.extentSft}`}
           value={rupees(c.gstAmount)}
         />
-        <View style={s.subtotalRow}>
-          <Text style={[s.rowLabel, s.subtotalText]}>Total GST</Text>
-          <Text style={s.subtotalText}>{rupees(c.gstAmount)}</Text>
-        </View>
+
+        <Text style={s.sectionTitle}>Registration Charges</Text>
+        <Row
+          s={s}
+          label={`Registration Charges  (${REG_CHARGES_PERCENT}% of Rs.${REG_CHARGES_BASE_RATE_PER_SFT}/- per Sft.) x ${quote.extentSft}`}
+          value={rupees(c.regChargesAmount)}
+        />
 
         <View style={s.grandTotalRow}>
           <Text style={s.grandTotalLabel}>Grand Total</Text>
           <Text style={s.grandTotalText}>{rupees(c.grandTotal)}</Text>
         </View>
         <Text style={[s.muted, { fontSize: 8, fontStyle: "italic", textAlign: "right", marginTop: 2 }]}>
-          Grand Total includes GST
+          Grand Total includes GST and Registration Charges
         </Text>
 
         <View style={s.terms}>
@@ -274,9 +277,6 @@ export default function QuoteDocument({ quote }: { quote: Quote }) {
           <Text style={s.para}>
             Balance {100 - AGREEMENT_PERCENT}% payment to be made as per Loan
             / progress of construction.
-          </Text>
-          <Text style={[s.muted, { fontSize: 8.5, fontStyle: "italic" }]}>
-            * GST + Registration Charges As Applicable.
           </Text>
           <Text style={[s.rowVal, { fontSize: 8.5 }]}>
             FLAT COST IS INCLUSIVE OF ALL AMENITIES

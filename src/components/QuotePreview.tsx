@@ -1,5 +1,5 @@
 import type { Quote } from "@/lib/types";
-import { computeQuote, rupees, formatDateDots, AGREEMENT_PERCENT, BOOKING_AMOUNT, GST_BASE_RATE_PER_SFT, GST_PERCENT } from "@/lib/calc";
+import { computeQuote, rupees, formatDateDots, AGREEMENT_PERCENT, BOOKING_AMOUNT, GST_BASE_RATE_PER_SFT, GST_PERCENT, REG_CHARGES_BASE_RATE_PER_SFT, REG_CHARGES_PERCENT } from "@/lib/calc";
 
 /** On-screen A4 rendition of the SMR VINAY estimate letter (matches the PDF). */
 export default function QuotePreview({ quote }: { quote: Quote }) {
@@ -146,12 +146,25 @@ export default function QuotePreview({ quote }: { quote: Quote }) {
           }
           value={rupees(c.gstAmount)}
         />
-        <div className="mt-1 flex items-baseline justify-between gap-4 border-t border-slate-200 py-[3px] pt-2 font-bold text-navy">
-          <span className="text-[13.5px] leading-snug">Total GST</span>
-          <span className="shrink-0 text-[13.5px] tabular-nums">
-            {rupees(c.gstAmount)}
-          </span>
+      </div>
+
+      {/* Registration charges (7.6%) */}
+      <div className="mt-6">
+        <div className="mb-1 text-[12px] font-bold uppercase tracking-wide text-navy">
+          Registration Charges
         </div>
+        <Row
+          label={
+            <>
+              Registration Charges{" "}
+              <span className="text-slate-400">
+                ({REG_CHARGES_PERCENT}% of Rs.{REG_CHARGES_BASE_RATE_PER_SFT}/- per Sft.) ×{" "}
+                {quote.extentSft}
+              </span>
+            </>
+          }
+          value={rupees(c.regChargesAmount)}
+        />
       </div>
 
       <div className="mt-3 flex items-center justify-between gap-4 rounded-lg bg-navy px-4 py-3">
@@ -163,7 +176,7 @@ export default function QuotePreview({ quote }: { quote: Quote }) {
         </span>
       </div>
       <p className="mt-1 text-right text-[11px] italic text-slate-500">
-        Grand Total includes GST
+        Grand Total includes GST and Registration Charges
       </p>
 
       {/* Payment terms */}
@@ -180,10 +193,7 @@ export default function QuotePreview({ quote }: { quote: Quote }) {
           Balance {100 - AGREEMENT_PERCENT}% payment to be made as per
           Loan / progress of construction.
         </p>
-        <p className="pt-1 text-[12px] italic text-slate-500">
-          * GST + Registration Charges As Applicable.
-        </p>
-        <p className="text-[12px] font-bold text-navy">
+        <p className="pt-1 text-[12px] font-bold text-navy">
           FLAT COST IS INCLUSIVE OF ALL AMENITIES
         </p>
       </div>

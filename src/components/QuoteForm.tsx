@@ -7,7 +7,7 @@ import { ArrowLeft, Save, Loader2 } from "lucide-react";
 import { Field, TextInput, Select, Button, Card, Switch, LockedField, Textarea } from "./ui";
 import FlatPicker from "./FlatPicker";
 import { emptyQuote, type Quote, type QuoteInput } from "@/lib/types";
-import { computeQuote, rupees, AGREEMENT_PERCENT, BOOKING_AMOUNT, GST_PERCENT } from "@/lib/calc";
+import { computeQuote, rupees, AGREEMENT_PERCENT, BOOKING_AMOUNT, GST_PERCENT, REG_CHARGES_PERCENT } from "@/lib/calc";
 import { createQuote, updateQuote } from "@/lib/store";
 
 type Props = { initial?: Quote; id?: string };
@@ -225,7 +225,7 @@ export default function QuoteForm({ initial, id }: Props) {
               <p className="mt-1 text-2xl font-bold tabular-nums">
                 {rupees(c.grandTotal)}
               </p>
-              <p className="text-[11px] text-slate-300">All-in (flat + charges + GST)</p>
+              <p className="text-[11px] text-slate-300">All-in (flat + charges + GST + registration)</p>
             </div>
             <div className="space-y-2.5 p-5 text-sm">
               <SumRow k="Flat Cost (Basic)" v={rupees(c.basicCost)} />
@@ -240,8 +240,12 @@ export default function QuoteForm({ initial, id }: Props) {
                 <span>Flat Cost</span>
                 <span className="tabular-nums">{rupees(c.flatCost)}</span>
               </div>
-              <SumRow k="Registration Charges" v={rupees(c.registrationTotal)} />
+              <SumRow k="Payable at Registration" v={rupees(c.registrationTotal)} />
               <SumRow k={`GST (${GST_PERCENT}%)`} v={rupees(c.gstAmount)} />
+              <SumRow
+                k={`Registration Charges (${REG_CHARGES_PERCENT}%)`}
+                v={rupees(c.regChargesAmount)}
+              />
               <SumRow
                 k={`Agreement Amount (${AGREEMENT_PERCENT}%)`}
                 v={rupees(c.agreementAmount)}
